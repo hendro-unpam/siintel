@@ -169,4 +169,44 @@ class UjianController extends Controller
         return redirect()->route('ujian.show', $ujian)
             ->with('success', 'Nilai siswa berhasil disimpan!');
     }
+    public function exportNilai(Ujian $ujian)
+    {
+        try {
+            $ujian->load(['kelas.siswas', 'mataPelajaran', 'guru', 'kategori', 'nilais']);
+            
+            $siswaKelas = $ujian->kelas->siswas()->orderBy('nama')->get();
+            $nilaiMap = $ujian->nilais->keyBy('siswa_id');
+            
+            $data = $siswaKelas->map(function($siswa) use ($nilaiMap) {
+                $nilaiSiswa = $nilaiMap->get($siswa->id);
+                return [
+                    'No' => null, // Will be filled by client or just index
+                    'NIS' => $siswa->nis,
+                    'Nama Siswa' => $siswa->nama,
+                    'Nilai' => $nilaiSiswa ? $nilaiSiswa->nilai : '-',
+                    'Catatan' => $nilaiSiswa ? ($nilaiSiswa->catatan ?? '-') : '-',
+                ];
+            });
+            
+            // Prepare exam info for header
+            $examInfo = [
+                'Nama Ujian' => $ujian->nama_ujian,
+                'Kategori' => $ujian->kategori?->nama_kategori ?? '-',
+                'Mata Pelajaran' => $ujian->mataPelajaran?->nama_mp ?? '-',
+                'Kelas' => $ujian->kelas?->nama ?? '-',
+                'Guru' => $ujian->guru?->nama ?? '-',
+                'Tanggal' => $ujian->tanggal ? $ujian->tanggal->format('d F Y') : '-',
+                'KKM' => '75', // Example, or fetch if exists
+            ];
+            
+            return response()->json([
+                'school' => session('sekolah_nama', 'SiIntel'),
+                'exam_info' => $examInfo,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Export Nilai Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Terjadi kesalahan server: ' . $e->getMessage()], 500);
+        }
+    }
 }

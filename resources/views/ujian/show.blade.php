@@ -94,10 +94,18 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-list-ol me-2"></i>Daftar Nilai Siswa</h5>
+                <div>
+                    <button type="button" class="btn btn-danger btn-sm me-2" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf me-1"></i> Export PDF
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel me-1"></i> Export Excel
+                    </button>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0" id="nilai-table">
                         <thead class="table-light">
                             <tr>
                                 <th width="50">No</th>
@@ -147,3 +155,162 @@
     </a>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script>
+    function exportToExcel() {
+        if (typeof XLSX === 'undefined') {
+            alert('Library Excel belum dimuat. Periksa koneksi internet Anda.');
+            return;
+        }
+
+        const btn = document.querySelector('button[onclick="exportToExcel()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Loading...';
+        btn.disabled = true;
+
+        const url = "{{ route('ujian.export', $ujian->id) }}";
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Terjadi kesalahan server'); });
+                }
+                return response.json();
+            })
+            .then(response => {
+                const data = response.data;
+                const examInfo = response.exam_info;
+                const school = response.school;
+
+                // Create header rows
+                let headerRows = [
+                    [school],
+                    ['Daftar Nilai Ujian'],
+                    ['Tanggal Cetak: ' + new Date().toLocaleDateString('id-ID')],
+                    [] // Empty row
+                ];
+
+                // Add exam info to header
+                if (Object.keys(examInfo).length > 0) {
+                    headerRows.push(['Informasi Ujian:']);
+                    for (const [key, value] of Object.entries(examInfo)) {
+                        headerRows.push([key, value]);
+                    }
+                    headerRows.push([]); // Empty row
+                }
+
+                // Create worksheet
+                const worksheet = XLSX.utils.json_to_sheet(data, { origin: headerRows.length });
+                
+                // Add header rows to worksheet
+                XLSX.utils.sheet_add_aoa(worksheet, headerRows, { origin: "A1" });
+
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Nilai Ujian");
+                
+                // Auto-width columns
+                worksheet["!cols"] = [
+                    { wch: 5 },  // No
+                    { wch: 15 }, // NIS
+                    { wch: 30 }, // Nama Siswa
+                    { wch: 10 }, // Nilai
+                    { wch: 30 }  // Catatan
+                ];
+
+                // Generate descriptive filename
+                const clean = (str) => (str || '').replace(/[\/\\:*?"<>|]/g, '').replace(/\s+/g, '_');
+                const fileName = `Nilai_${clean(examInfo['Nama Ujian'])}_${clean(examInfo['Kelas'])}_${clean(examInfo['Mata Pelajaran'])}.xlsx`;
+
+                XLSX.writeFile(workbook, fileName);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal mengunduh data nilai: ' + error.message);
+            })
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+    }
+
+    function exportToPDF() {
+        const table = document.getElementById('nilai-table');
+        if (!table) {
+            alert('Tabel tidak ditemukan');
+            return;
+        }
+
+        // Clone table to modify for print if needed
+        const clonedTable = table.cloneNode(true);
+        
+        // Prepare exam info HTML
+        const examInfoHtml = `
+            <table style="width: 100%; margin-bottom: 20px; border: none;">
+                <tr>
+                    <td width="150"><strong>Nama Ujian</strong></td>
+                    <td>: {{ $ujian->nama_ujian }}</td>
+                    <td width="150"><strong>Mata Pelajaran</strong></td>
+                    <td>: {{ $ujian->mataPelajaran->nama_mp ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Kelas</strong></td>
+                    <td>: {{ $ujian->kelas->nama ?? '-' }}</td>
+                    <td><strong>Guru</strong></td>
+                    <td>: {{ $ujian->guru->nama ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Tanggal</strong></td>
+                    <td>: {{ $ujian->tanggal->format('d F Y') }}</td>
+                    <td><strong>Kategori</strong></td>
+                    <td>: {{ $ujian->kategori->nama_kategori ?? '-' }}</td>
+                </tr>
+            </table>
+        `;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Nilai_{{ Str::slug($ujian->nama_ujian) }}_{{ Str::slug($ujian->kelas->nama) }}_{{ Str::slug($ujian->mataPelajaran->nama_mp) }}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { text-align: center; color: #333; font-size: 18px; margin-bottom: 5px; }
+                    h2 { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
+                    .info-table td { padding: 4px; border: none; font-size: 12px; }
+                    table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    table.data-table th, table.data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
+                    table.data-table th { background-color: #4f46e5; color: white; text-align: center; }
+                    table.data-table td.text-center { text-align: center; }
+                    tr:nth-child(even) { background-color: #f9f9f9; }
+                    .footer { margin-top: 30px; text-align: right; font-size: 10px; color: #666; }
+                    .badge { padding: 2px 6px; border-radius: 4px; color: white; font-size: 10px; }
+                    .bg-success { background-color: #198754; }
+                    .bg-warning { background-color: #ffc107; color: #000; }
+                    .bg-danger { background-color: #dc3545; }
+                    .bg-secondary { background-color: #6c757d; }
+                    @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+                </style>
+            </head>
+            <body>
+                <h1>{{ session('sekolah_nama', 'SiIntel') }}</h1>
+                <h2>Daftar Nilai Ujian</h2>
+                <div class="info-table">
+                    ${examInfoHtml}
+                </div>
+                <table class="data-table">
+                    ${clonedTable.innerHTML}
+                </table>
+                <div class="footer">Dicetak pada: ${new Date().toLocaleString('id-ID')}</div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.onload = function() {
+            printWindow.print();
+        };
+    }
+</script>
+@endpush

@@ -80,6 +80,7 @@ Route::middleware(['multi.auth', 'role:admin'])->group(function () {
     Route::resource('ujian-kategori', \App\Http\Controllers\UjianKategoriController::class)->except(['show']);
     Route::get('/ujian/{ujian}/nilai', [\App\Http\Controllers\UjianController::class, 'inputNilai'])->name('ujian.input-nilai');
     Route::post('/ujian/{ujian}/nilai', [\App\Http\Controllers\UjianController::class, 'storeNilai'])->name('ujian.store-nilai');
+    Route::get('/ujian/{ujian}/export', [\App\Http\Controllers\UjianController::class, 'exportNilai'])->name('ujian.export');
 });
 
 // Siswa: View Nilai
