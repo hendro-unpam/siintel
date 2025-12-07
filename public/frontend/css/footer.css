@@ -1,0 +1,218 @@
+/**
+ * Footer Stylesheet
+ * Sekolah Insan Teladan
+ */
+
+.footer {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #1a4d1f 100%);
+  color: var(--white);
+  margin-top: 80px;
+}
+
+.footer-content {
+  padding: 60px 0 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+}
+
+.footer-section {
+  animation: fadeInUp 0.6s ease;
+}
+
+.footer-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.footer-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: var(--accent-color);
+  border-radius: 2px;
+}
+
+.footer-text {
+  line-height: 1.8;
+  opacity: 0.9;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.footer-logo {
+  margin-top: 20px;
+}
+
+/* Footer Links */
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--white);
+  opacity: 0.9;
+  transition: var(--transition);
+  font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+  color: var(--accent-color);
+  padding-left: 5px;
+}
+
+.footer-links i {
+  font-size: 0.7rem;
+}
+
+/* Footer Contact */
+.footer-contact {
+  list-style: none;
+}
+
+.footer-contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.footer-contact i {
+  font-size: 1.1rem;
+  color: var(--accent-color);
+  margin-top: 3px;
+  min-width: 20px;
+}
+
+.footer-contact a {
+  color: var(--white);
+  opacity: 0.9;
+  transition: var(--transition);
+}
+
+.footer-contact a:hover {
+  opacity: 1;
+  color: var(--accent-color);
+}
+
+/* Social Links */
+.social-links {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: var(--white);
+  font-size: 1.1rem;
+  transition: var(--transition);
+}
+
+.social-link:hover {
+  background: var(--accent-color);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 179, 0, 0.3);
+}
+
+/* Footer Info */
+.footer-info {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.footer-info p {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.footer-info p:last-child {
+  margin-bottom: 0;
+}
+
+.footer-info strong {
+  color: var(--accent-color);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom-content {
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.footer-bottom-content p {
+  margin-bottom: 5px;
+}
+
+.footer-bottom-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-content {
+    padding: 40px 0 30px;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+  }
+
+  .footer-title {
+    font-size: 1.2rem;
+  }
+
+  .social-links {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .footer-title::after {
+    left: 0;
+  }
+
+  .footer-bottom-content {
+    font-size: 0.85rem;
+  }
+}

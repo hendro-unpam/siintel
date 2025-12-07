@@ -18,9 +18,22 @@ Route::get('/login', [MultiAuthController::class, 'showLoginForm'])->name('login
 Route::post('/login', [MultiAuthController::class, 'login']);
 Route::post('/logout', [MultiAuthController::class, 'logout'])->name('logout');
 
-// Home redirect
-Route::get('/', function () {
-    return redirect('/login');
+// Public Frontend Routes
+Route::get('/', [\App\Http\Controllers\FrontendController::class, 'index'])->name('home');
+Route::get('/tentang', [\App\Http\Controllers\FrontendController::class, 'tentang'])->name('tentang');
+Route::get('/berita', [\App\Http\Controllers\FrontendController::class, 'berita'])->name('frontend.berita');
+Route::get('/berita/{berita}', [\App\Http\Controllers\FrontendController::class, 'detailBerita'])->name('frontend.berita.detail');
+Route::get('/prestasi', [\App\Http\Controllers\FrontendController::class, 'prestasi'])->name('frontend.prestasi');
+Route::get('/ekstrakurikuler', [\App\Http\Controllers\FrontendController::class, 'ekstrakurikuler'])->name('frontend.ekstrakurikuler');
+Route::get('/hubungi', [\App\Http\Controllers\FrontendController::class, 'hubungi'])->name('hubungi');
+
+// API Route for fetching siswa by kelas
+Route::get('/api/kelas/{kelas}/siswa', function ($kelasId) {
+    $siswa = \App\Models\Siswa::withoutGlobalScope('sekolah')
+        ->where('kelas_id', $kelasId)
+        ->orderBy('nama')
+        ->get(['id', 'nama', 'nis']);
+    return response()->json($siswa);
 });
 
 // Protected Routes - Guru (HARUS SEBELUM resource guru)
@@ -81,6 +94,19 @@ Route::middleware(['multi.auth', 'role:admin'])->group(function () {
     Route::get('/ujian/{ujian}/nilai', [\App\Http\Controllers\UjianController::class, 'inputNilai'])->name('ujian.input-nilai');
     Route::post('/ujian/{ujian}/nilai', [\App\Http\Controllers\UjianController::class, 'storeNilai'])->name('ujian.store-nilai');
     Route::get('/ujian/{ujian}/export', [\App\Http\Controllers\UjianController::class, 'exportNilai'])->name('ujian.export');
+
+    // Public Content Management moved to Web Admin routes (line 95+)
+    // Route::resource('berita', ...) - use webadmin.berita instead
+    // Route::resource('prestasi', ...) - use webadmin.prestasi instead
+    // Route::resource('ekstrakurikuler', ...) - use webadmin.ekstrakurikuler instead
+});
+
+// Web Admin Routes (for website content management)
+Route::middleware(['multi.auth', 'role:admin'])->prefix('web-admin')->name('webadmin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\WebAdminController::class, 'dashboard'])->name('dashboard');
+    Route::resource('berita', \App\Http\Controllers\BeritaController::class)->parameters(['berita' => 'berita']);
+    Route::resource('prestasi', \App\Http\Controllers\PrestasiController::class)->parameters(['prestasi' => 'prestasi']);
+    Route::resource('ekstrakurikuler', \App\Http\Controllers\EkstrakurikulerController::class)->parameters(['ekstrakurikuler' => 'ekstrakurikuler']);
 });
 
 // Siswa: View Nilai

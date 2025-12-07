@@ -1,0 +1,94 @@
+@extends(request()->is('web-admin/*') ? 'layouts.web-admin' : 'layouts.app')
+
+@section('content')
+<div class="container-fluid px-4">
+    @php
+        $isWebAdmin = request()->is('web-admin/*');
+        $routePrefix = $isWebAdmin ? 'webadmin.' : '';
+    @endphp
+    <h1 class="mt-4">Manajemen Prestasi</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ $isWebAdmin ? route('webadmin.dashboard') : route('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Prestasi</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div><i class="fas fa-trophy me-1"></i> Daftar Prestasi</div>
+            <a href="{{ route($routePrefix . 'prestasi.create') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i> Tambah Prestasi
+            </a>
+        </div>
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th width="50">No</th>
+                            <th>Gambar</th>
+                            <th>Judul Prestasi</th>
+                            <th>Nama Siswa</th>
+                            <th>Kelas</th>
+                            <th>Kategori</th>
+                            <th>Tanggal</th>
+                            <th width="150">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($prestasis as $index => $prestasi)
+                        <tr>
+                            <td>{{ $prestasis->firstItem() + $index }}</td>
+                            <td>
+                                @if($prestasi->gambar)
+                                    <img src="{{ asset('storage/' . $prestasi->gambar) }}" alt="Thumbnail" width="80" class="img-thumbnail">
+                                @else
+                                    <span class="text-muted">No Image</span>
+                                @endif
+                            </td>
+                            <td>{{ $prestasi->judul }}</td>
+                            <td>{{ $prestasi->nama_siswa }}</td>
+                            <td>{{ $prestasi->kelas }}</td>
+                            <td>
+                                @if($prestasi->kategori == 'akademik')
+                                    <span class="badge bg-primary">Akademik</span>
+                                @else
+                                    <span class="badge bg-success">Non-Akademik</span>
+                                @endif
+                            </td>
+                            <td>{{ $prestasi->tanggal->format('d F Y') }}</td>
+                            <td>
+                                <a href="{{ route($routePrefix . 'prestasi.edit', $prestasi->id) }}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route($routePrefix . 'prestasi.destroy', $prestasi->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus prestasi ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">Belum ada data prestasi.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-3">
+                {{ $prestasis->links() }}
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

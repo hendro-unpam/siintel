@@ -1,0 +1,62 @@
+.berita-card .card-title a {
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+.berita-card .card-title a:hover {
+  color: var(--primary-color);
+}
+
+.card-footer {
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+}
+
+.pagination .btn {
+  padding: 10px 15px;
+  font-size: 0.95rem;
+}
+
+.pagination .btn-secondary {
+  background: #f5f5f5;
+  color: var(--text-dark);
+}
+
+.pagination .btn-secondary:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.no-data {
+  background: white;
+  padding: 80px 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.no-data i {
+  font-size: 5rem;
+  color: var(--primary-color);
+  margin-bottom: 25px;
+  opacity: 0.7;
+}
+
+.no-data p {
+  font-size: 1.2rem;
+  color: var(--text-light);
+}

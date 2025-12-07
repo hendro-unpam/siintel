@@ -397,6 +397,17 @@
                     <i class="fas fa-briefcase"></i> Pekerjaan
                 </a>
 
+                <div class="nav-section-title">Website Publik</div>
+                <a href="{{ route('webadmin.berita.index') }}" class="nav-link {{ request()->routeIs('webadmin.berita.*') || request()->routeIs('berita.*') ? 'active' : '' }}">
+                    <i class="fas fa-newspaper"></i> Berita
+                </a>
+                <a href="{{ route('webadmin.prestasi.index') }}" class="nav-link {{ request()->routeIs('webadmin.prestasi.*') || request()->routeIs('prestasi.*') ? 'active' : '' }}">
+                    <i class="fas fa-trophy"></i> Prestasi
+                </a>
+                <a href="{{ route('webadmin.ekstrakurikuler.index') }}" class="nav-link {{ request()->routeIs('webadmin.ekstrakurikuler.*') || request()->routeIs('ekstrakurikuler.*') ? 'active' : '' }}">
+                    <i class="fas fa-running"></i> Ekstrakurikuler
+                </a>
+
                 <div class="nav-section-title">Akademik</div>
 
                 <a href="{{ route('jadwal.index') }}" class="nav-link {{ request()->routeIs('jadwal.*') ? 'active' : '' }}">

@@ -100,8 +100,8 @@
                             @forelse($recentAbsen as $absen)
                             <tr>
                                 <td>{{ $absen->tgl->format('d/m/Y') }}</td>
-                                <td>{{ $absen->siswa->nama }}</td>
-                                <td>{{ $absen->jadwal->mataPelajaran->nama_mp ?? '-' }}</td>
+                                <td>{{ $absen->siswa?->nama ?? '-' }}</td>
+                                <td>{{ $absen->jadwal?->mataPelajaran?->nama_mp ?? '-' }}</td>
                                 <td>
                                     @switch($absen->ket)
                                         @case('M')

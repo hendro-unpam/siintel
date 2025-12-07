@@ -32,6 +32,20 @@ class MultiAuthController extends Controller
      */
     public function login(Request $request)
     {
+        $loginType = $request->login_type ?? 'app';
+        
+        // Web Admin login (requires sekolah_id)
+        if ($loginType === 'web') {
+            $request->validate([
+                'sekolah_id' => 'required|exists:sekolahs,id',
+                'username' => 'required|string',
+                'password' => 'required|string',
+            ]);
+            
+            return $this->loginAsWebAdmin($request->username, $request->password, $request->sekolah_id);
+        }
+        
+        // App login (requires sekolah_id)
         $request->validate([
             'sekolah_id' => 'required|exists:sekolahs,id',
             'username' => 'required|string',
@@ -59,6 +73,40 @@ class MultiAuthController extends Controller
     }
 
     /**
+     * Login as Web Admin (per school)
+     */
+    protected function loginAsWebAdmin(string $username, string $password, int $sekolahId)
+    {
+        $user = User::where('sekolah_id', $sekolahId)
+            ->where(function ($query) use ($username) {
+                $query->where('email', $username)
+                    ->orWhere('name', $username);
+            })
+            ->first();
+
+        if ($user && Hash::check($password, $user->password)) {
+            Auth::login($user);
+            
+            $sekolah = Sekolah::find($sekolahId);
+            
+            Session::put('user_id', $user->id);
+            Session::put('user_name', $user->name);
+            Session::put('user_role', 'admin');
+            Session::put('auth_type', 'user');
+            Session::put('login_type', 'web');
+            Session::put('sekolah_id', $sekolahId);
+            Session::put('sekolah_nama', $sekolah->nama ?? 'Sekolah');
+            Session::put('sekolah_logo', $sekolah->logo ?? null);
+
+            return redirect()->route('webadmin.dashboard');
+        }
+
+        return back()->withErrors([
+            'username' => 'Email atau Password salah untuk sekolah ini!',
+        ])->withInput(request()->only('username', 'sekolah_id'));
+    }
+
+    /**
      * Login as Admin
      */
     protected function loginAsAdmin(string $username, string $password, int $sekolahId)
@@ -79,6 +127,7 @@ class MultiAuthController extends Controller
             Session::put('user_name', $user->name);
             Session::put('user_role', 'admin');
             Session::put('auth_type', 'user');
+            Session::put('login_type', 'app');
             Session::put('sekolah_id', $sekolahId);
             Session::put('sekolah_nama', $sekolah->nama ?? 'Sekolah');
             Session::put('sekolah_logo', $sekolah->logo ?? null);
@@ -157,7 +206,7 @@ class MultiAuthController extends Controller
     {
         Auth::logout();
         
-        Session::forget(['user_id', 'user_name', 'user_role', 'auth_type', 'guru_id', 'siswa_id', 'kelas_id', 'sekolah_id', 'sekolah_nama', 'sekolah_logo']);
+        Session::forget(['user_id', 'user_name', 'user_role', 'auth_type', 'login_type', 'guru_id', 'siswa_id', 'kelas_id', 'sekolah_id', 'sekolah_nama', 'sekolah_logo']);
         Session::invalidate();
         Session::regenerateToken();
 
@@ -169,6 +218,11 @@ class MultiAuthController extends Controller
      */
     protected function redirectByRole(string $role)
     {
+        // Check if user logged in as Web Admin
+        if (Session::get('login_type') === 'web') {
+            return redirect()->route('webadmin.dashboard');
+        }
+        
         return match ($role) {
             'admin' => redirect()->route('dashboard'),
             'guru' => redirect('/guru-panel/dashboard'),

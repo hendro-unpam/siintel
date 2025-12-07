@@ -1,0 +1,217 @@
+.content-intro {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.content-intro p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-light);
+  margin: 0;
+}
+
+.kurikulum-section {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.kurikulum-section h3 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+}
+
+.kurikulum-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.kurikulum-table thead {
+  background: var(--primary-color);
+  color: white;
+}
+
+.kurikulum-table th {
+  padding: 15px;
+  text-align: center;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.kurikulum-table td {
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.kurikulum-table td:first-child {
+  text-align: left;
+}
+
+.kurikulum-table tbody tr:hover {
+  background: var(--bg-light);
+}
+
+.section-header td {
+  background: var(--bg-light);
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: left !important;
+}
+
+.total-row td {
+  background: var(--primary-light);
+  color: white;
+  font-weight: 600;
+}
+
+.table-note {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-top: 15px;
+  font-style: italic;
+}
+
+.focus-pembelajaran {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.focus-pembelajaran h3 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.focus-card {
+  display: flex;
+  gap: 20px;
+  padding: 25px;
+  background: var(--bg-light);
+  border-radius: 12px;
+  transition: var(--transition);
+  align-items: flex-start;
+}
+
+.focus-card:hover {
+  transform: translateX(5px);
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.focus-number {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-light)
+  );
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.focus-content h4 {
+  color: var(--text-dark);
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.focus-content p {
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.keunggulan-section {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.keunggulan-section h3 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.keunggulan-item {
+  background: var(--bg-light);
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.keunggulan-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
+  background: white;
+}
+
+.keunggulan-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-light)
+  );
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 15px;
+}
+
+.keunggulan-item h4 {
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.keunggulan-item p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .kurikulum-table {
+    font-size: 0.85rem;
+  }
+
+  .kurikulum-table th,
+  .kurikulum-table td {
+    padding: 8px;
+  }
+
+  .focus-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .focus-number {
+    margin: 0 auto;
+  }
+}
